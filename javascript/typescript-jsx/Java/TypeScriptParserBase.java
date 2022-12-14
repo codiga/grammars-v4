@@ -1,147 +1,135 @@
-import org.antlr.v4.runtime.*;
-
 import java.util.Stack;
 
+import org.antlr.v4.runtime.*;
 /**
- * All lexer methods that used in grammar (IsStrictMode)
- * should start with Upper Case Char similar to Lexer rules.
+ * All parser methods that used in grammar (p, prev, notLineTerminator, etc.)
+ * should start with lower case char similar to parser rules.
  */
-public abstract class TypeScriptLexerBase extends Lexer
+public abstract class TypeScriptParserBase extends Parser
 {
-    /**
-     * Stores values of nested modes. By default mode is strict or
-     * defined externally (useStrictDefault)
-     */
-    private Stack<Boolean> scopeStrictModes = new Stack<Boolean>();
 
-    private Token lastToken = null;
-    /**
-     * Default value of strict mode
-     * Can be defined externally by setUseStrictDefault
-     */
-    private boolean useStrictDefault = false;
-    /**
-     * Current value of strict mode
-     * Can be defined during parsing, see StringFunctions.js and StringGlobal.js samples
-     */
-    private boolean useStrictCurrent = false;
-    /**
-     * Keeps track of the the current depth of nested template string backticks.
-     * E.g. after the X in:
-     *
-     * `${a ? `${X
-     *
-     * templateDepth will be 2. This variable is needed to determine if a `}` is a
-     * plain CloseBrace, or one that closes an expression inside a template string.
-     */
-    private int templateDepth = 0;
-
-    public TypeScriptLexerBase(CharStream input) {
+    private Stack<String> _tagNames = new Stack<String>();
+    public TypeScriptParserBase(TokenStream input) {
         super(input);
     }
 
-    public boolean getStrictDefault() {
-        return useStrictDefault;
-    }
-
-    public void setUseStrictDefault(boolean value) {
-        useStrictDefault = value;
-        useStrictCurrent = value;
-    }
-
-    public boolean IsStrictMode() {
-        return useStrictCurrent;
-    }
-
-    public boolean IsInTemplateString() {
-        return this.templateDepth > 0;
+    /**
+     * Short form for prev(String str)
+     */
+    protected boolean p(String str) {
+        return prev(str);
     }
 
     /**
-     * Return the next token from the character stream and records this last
-     * token in case it resides on the default channel. This recorded token
-     * is used to determine when the lexer could possibly match a regex
-     * literal. Also changes scopeStrictModes stack if tokenize special
-     * string 'use strict';
+     * Whether the previous token value equals to @param str
+     */
+    protected boolean prev(String str) {
+        return _input.LT(-1).getText().equals(str);
+    }
+
+    /**
+     * Short form for next(String str)
+     */
+    protected boolean n(String str) {
+        return next(str);
+    }
+
+    /**
+     * Whether the next token value equals to @param str
+     */
+    protected boolean next(String str) {
+        return _input.LT(1).getText().equals(str);
+    }
+
+    protected boolean notLineTerminator() {
+        return !here(TypeScriptParser.LineTerminator);
+    }
+
+    protected boolean notOpenBraceAndNotFunction() {
+        int nextTokenType = _input.LT(1).getType();
+        return nextTokenType != TypeScriptParser.OpenBrace && nextTokenType != TypeScriptParser.Function_;
+    }
+
+    protected boolean closeBrace() {
+        return _input.LT(1).getType() == TypeScriptParser.CloseBrace;
+    }
+    
+    /**
+     * Returns {@code true} iff on the current index of the parser's
+     * token stream a token of the given {@code type} exists on the
+     * {@code HIDDEN} channel.
      *
-     * @return the next token from the character stream.
+     * @param type
+     *         the type of the token on the {@code HIDDEN} channel
+     *         to check.
+     *
+     * @return {@code true} iff on the current index of the parser's
+     * token stream a token of the given {@code type} exists on the
+     * {@code HIDDEN} channel.
      */
-    @Override
-    public Token nextToken() {
-        Token next = super.nextToken();
-        System.out.println(next.getText());
+    private boolean here(final int type) {
 
-        if (next.getChannel() == Token.DEFAULT_CHANNEL) {
-            // Keep track of the last token on the default channel.
-            this.lastToken = next;
-        }
+        // Get the token ahead of the current index.
+        int possibleIndexEosToken = this.getCurrentToken().getTokenIndex() - 1;
+        Token ahead = _input.get(possibleIndexEosToken);
 
-        return next;
+        // Check if the token resides on the HIDDEN channel and if it's of the
+        // provided type.
+        return (ahead.getChannel() == Lexer.HIDDEN) && (ahead.getType() == type);
     }
-
-    protected void ProcessOpenBrace()
-    {
-        useStrictCurrent = scopeStrictModes.size() > 0 && scopeStrictModes.peek() ? true : useStrictDefault;
-        scopeStrictModes.push(useStrictCurrent);
-    }
-
-    protected void ProcessCloseBrace()
-    {
-        useStrictCurrent = scopeStrictModes.size() > 0 ? scopeStrictModes.pop() : useStrictDefault;
-    }
-
-    protected void ProcessStringLiteral()
-    {
-        if (lastToken == null || lastToken.getType() == TypeScriptLexer.OpenBrace)
-        {
-            String text = getText();
-            if (text.equals("\"use strict\"") || text.equals("'use strict'"))
-            {
-                if (scopeStrictModes.size() > 0)
-                    scopeStrictModes.pop();
-                useStrictCurrent = true;
-                scopeStrictModes.push(useStrictCurrent);
-            }
-        }
-    }
-
-    protected void IncreaseTemplateDepth() {
-        this.templateDepth++;
-    }
-
-    protected void DecreaseTemplateDepth() {
-        this.templateDepth--;
-    }
-
+    
     /**
-     * Returns {@code true} if the lexer can match a regex literal.
+     * Returns {@code true} iff on the current index of the parser's
+     * token stream a token exists on the {@code HIDDEN} channel which
+     * either is a line terminator, or is a multi line comment that
+     * contains a line terminator.
+     *
+     * @return {@code true} iff on the current index of the parser's
+     * token stream a token exists on the {@code HIDDEN} channel which
+     * either is a line terminator, or is a multi line comment that
+     * contains a line terminator.
      */
-    protected boolean IsRegexPossible() {
-                                       
-        if (this.lastToken == null) {
-            // No token has been produced yet: at the start of the input,
-            // no division is possible, so a regex literal _is_ possible.
+    protected boolean lineTerminatorAhead() {
+
+        // Get the token ahead of the current index.
+        int possibleIndexEosToken = this.getCurrentToken().getTokenIndex() - 1;
+        Token ahead = _input.get(possibleIndexEosToken);
+
+        if (ahead.getChannel() != Lexer.HIDDEN) {
+            // We're only interested in tokens on the HIDDEN channel.
+            return false;
+        }
+
+        if (ahead.getType() == TypeScriptParser.LineTerminator) {
+            // There is definitely a line terminator ahead.
             return true;
         }
-        
-        switch (this.lastToken.getType()) {
-            case TypeScriptLexer.Identifier:
-            case TypeScriptLexer.NullLiteral:
-            case TypeScriptLexer.BooleanLiteral:
-            case TypeScriptLexer.This:
-            case TypeScriptLexer.CloseBracket:
-            case TypeScriptLexer.CloseParen:
-            case TypeScriptLexer.OctalIntegerLiteral:
-            case TypeScriptLexer.DecimalLiteral:
-            case TypeScriptLexer.HexIntegerLiteral:
-            case TypeScriptLexer.StringLiteral:
-            case TypeScriptLexer.PlusPlus:
-            case TypeScriptLexer.MinusMinus:
-                // After any of the tokens above, no regex literal can follow.
-                return false;
-            default:
-                // In all other cases, a regex literal _is_ possible.
-                return true;
+
+        if (ahead.getType() == TypeScriptParser.WhiteSpaces) {
+            // Get the token ahead of the current whitespaces.
+            possibleIndexEosToken = this.getCurrentToken().getTokenIndex() - 2;
+            ahead = _input.get(possibleIndexEosToken);
         }
+
+        // Get the token's text and type.
+        String text = ahead.getText();
+        int type = ahead.getType();
+
+        // Check if the token is, or contains a line terminator.
+        return (type == TypeScriptParser.MultiLineComment && (text.contains("\r") || text.contains("\n"))) ||
+                (type == TypeScriptParser.LineTerminator);
+    }
+
+    // jsx
+    protected void pushHtmlTagName(String tagName)
+    {
+        _tagNames.push(tagName);
+    }
+
+    // jsx
+    protected boolean popHtmlTagName(String tagName)
+    {
+//        return String.Equals(_tagNames.pop(), tagName, StringComparison.InvariantCulture);
+        return tagName.equalsIgnoreCase(_tagNames.pop());
     }
 }
