@@ -1,11 +1,14 @@
-import org.antlr.v4.runtime.*;
+import java.util.Stack;
 
+import org.antlr.v4.runtime.*;
 /**
  * All parser methods that used in grammar (p, prev, notLineTerminator, etc.)
  * should start with lower case char similar to parser rules.
  */
 public abstract class TypeScriptParserBase extends Parser
 {
+
+    private Stack<String> _tagNames = new Stack<String>();
     public TypeScriptParserBase(TokenStream input) {
         super(input);
     }
@@ -115,5 +118,18 @@ public abstract class TypeScriptParserBase extends Parser
         // Check if the token is, or contains a line terminator.
         return (type == TypeScriptParser.MultiLineComment && (text.contains("\r") || text.contains("\n"))) ||
                 (type == TypeScriptParser.LineTerminator);
+    }
+
+    // jsx
+    protected void pushHtmlTagName(String tagName)
+    {
+        _tagNames.push(tagName);
+    }
+
+    // jsx
+    protected boolean popHtmlTagName(String tagName)
+    {
+//        return String.Equals(_tagNames.pop(), tagName, StringComparison.InvariantCulture);
+        return tagName.equalsIgnoreCase(_tagNames.pop());
     }
 }

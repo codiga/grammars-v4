@@ -63,6 +63,7 @@ BitXorAssign:                   '^=';
 BitOrAssign:                    '|=';
 ARROW:                          '=>';
 
+
 /// Null Literals
 
 NullLiteral:                    'null';
@@ -198,6 +199,114 @@ mode TEMPLATE;
 BackTickInside:                 '`' {this.DecreaseTemplateDepth();} -> type(BackTick), popMode;
 TemplateStringStartExpression:  '${' -> pushMode(DEFAULT_MODE);
 TemplateStringAtom:             ~[`];
+
+//
+// html tag declarations
+//
+mode TAG;
+
+TagOpen
+    : LessThan -> pushMode(TAG)
+    ;
+TagClose
+    : MoreThan -> popMode
+    ;
+
+TagSlashClose
+    : '/>' -> popMode
+    ;
+
+TagSlash
+    : Divide
+    ;
+
+TagName
+    : TagNameStartChar TagNameChar*
+    ;
+
+// an attribute value may have spaces b/t the '=' and the value
+AttributeValue
+    : [ ]* Attribute -> popMode
+    ;
+
+Attribute
+    : DoubleQuoteString
+    | SingleQuoteString
+    | AttributeChar
+    | HexChars
+    | DecChars
+    ;
+
+//
+// lexing mode for attribute values
+//
+mode ATTVALUE;
+
+TagEquals
+    : Assign -> pushMode(ATTVALUE)
+    ;
+
+// Fragment rules
+fragment AttributeChar
+    : '-'
+    | '_'
+    | '.'
+    | '/'
+    | '+'
+    | ','
+    | '?'
+    | '='
+    | ':'
+    | ';'
+    | '#'
+    | [0-9a-zA-Z]
+    ;
+
+fragment AttributeChars
+    : AttributeChar+ ' '?
+    ;
+
+fragment HexChars
+    : '#' [0-9a-fA-F]+
+    ;
+
+fragment DecChars
+    : [0-9]+ '%'?
+    ;
+
+fragment DoubleQuoteString
+    : '"' ~[<"]* '"'
+    ;
+fragment SingleQuoteString
+    : '\'' ~[<']* '\''
+    ;
+
+fragment
+TagNameStartChar
+    :   [:a-zA-Z]
+    |   '\u2070'..'\u218F'
+    |   '\u2C00'..'\u2FEF'
+    |   '\u3001'..'\uD7FF'
+    |   '\uF900'..'\uFDCF'
+    |   '\uFDF0'..'\uFFFD'
+    ;
+
+fragment
+TagNameChar
+    : TagNameStartChar
+    | '-'
+    | '_'
+    | '.'
+    | Digit
+    |   '\u00B7'
+    |   '\u0300'..'\u036F'
+    |   '\u203F'..'\u2040'
+    ;
+
+fragment
+Digit
+    : [0-9]
+    ;
 
 // Fragment rules
 

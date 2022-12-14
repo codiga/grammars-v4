@@ -35,6 +35,64 @@ options {
     superClass=TypeScriptParserBase;
 }
 
+// support for JSX
+
+
+
+htmlElements
+    : htmlElement+
+    ;
+
+htmlElement
+    : '<' htmlTagStartName htmlAttribute* '>' htmlContent '<''/' htmlTagClosingName '>'
+    | '<' htmlTagName htmlAttribute* htmlContent '/''>'
+    | '<' htmlTagName htmlAttribute* '/''>'
+    | '<' htmlTagName htmlAttribute* '>'
+    ;
+
+htmlContent
+    : htmlChardata? ((htmlElement | objectExpressionSequence) htmlChardata?)*
+    ;
+
+htmlTagStartName
+    : htmlTagName {this.pushHtmlTagName($htmlTagName.text);}
+    ;
+
+htmlTagClosingName
+    : htmlTagName {this.popHtmlTagName($htmlTagName.text)}?
+    ;
+
+htmlTagName
+    : TagName
+    | keyword
+    | Identifier
+    ;
+
+htmlAttribute
+    : htmlAttributeName '=' htmlAttributeValue
+    | htmlAttributeName
+    ;
+
+htmlAttributeName
+    : TagName
+    | Identifier ('-' Identifier)*		// 2020/10/28 bugfix: '-' is recognized as MINUS and TagName is splited by '-'.
+    ;
+
+htmlChardata
+    : ~('<'|'{')+
+    ;
+
+htmlAttributeValue
+    : AttributeValue
+    | StringLiteral
+    | objectExpressionSequence
+    ;
+
+objectExpressionSequence
+    : '{' expressionSequence '}'
+    ;
+// end support for jsx
+
 // SupportSyntax
 
 initializer
@@ -445,6 +503,7 @@ breakStatement
 
 returnStatement
     : Return ({this.notLineTerminator()}? expressionSequence)? eos
+    | Return '(' htmlElements ')' eos
     ;
 
 yieldStatement
