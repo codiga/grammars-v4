@@ -764,6 +764,7 @@ singleExpression
     | '(' expressionSequence ')'                                             # ParenthesizedExpression
     | typeArguments expressionSequence?                                      # GenericTypes
     | singleExpression As asExpression                                       # CastAsExpression
+    | htmlElements                                                           # htmlElementExpression
     ;
 
 asExpression
