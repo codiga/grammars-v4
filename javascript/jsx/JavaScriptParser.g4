@@ -366,7 +366,7 @@ htmlElements
     ;
 
 htmlElement
-    : '<' htmlTagStartName htmlAttribute* '>' htmlContent '<''/' htmlTagClosingName '>'
+    : '<' htmlTagStartName? htmlAttribute* '>' htmlContent '<''/' htmlTagClosingName? '>'
     | '<' htmlTagName htmlAttribute* htmlContent '/''>'
     | '<' htmlTagName htmlAttribute* '/''>'
     | '<' htmlTagName htmlAttribute* '>'
@@ -385,9 +385,7 @@ htmlTagClosingName
     ;
 
 htmlTagName
-    : TagName
-    | keyword
-    | Identifier
+    : (TagName | keyword | Identifier) ('.' (TagName | keyword | Identifier))*
     ;
 
 htmlAttribute
