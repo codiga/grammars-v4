@@ -16,6 +16,6 @@ jobs:
         distribution: 'corretto'
         java-version: 17
     - name: Run tests
-      run:
-        - curl -O https://www.antlr.org/download/antlr-4.11.1-complete.jar
-        - ANTLR_JAR=$PWD/antlr-4.11.1-complete.jar make -C javascript/jsx/ check
+      run: |
+        curl -O https://www.antlr.org/download/antlr-4.11.1-complete.jar
+        ANTLR_JAR=$PWD/antlr-4.11.1-complete.jar make -C javascript/jsx/ check
