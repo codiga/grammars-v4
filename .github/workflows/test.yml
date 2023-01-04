@@ -25,3 +25,4 @@ jobs:
       run: ( cd javascript/jsx && make check)
       env:
         ANTLR_JAR: /home/runner/work/grammars-v4/grammars-v4/antlr-4.11.1-complete.jar
+        CLASSPATH: .:/home/runner/work/grammars-v4/grammars-v4/antlr-4.11.1-complete.jar::
