@@ -7,4 +7,4 @@ compile:
 	cd gen && java -Xmx500M -cp "$$ANTLR_JAR:." org.antlr.v4.Tool JavaScriptLexer.g4 JavaScriptParser.g4 && javac *.java
 
 check: compile
-	for file in examples/*.{js,jsx}; do ./scripts/check-file.sh $$file ; done
+	for file in examples/*.jsx; do ./scripts/check-file.sh $$file ; done
