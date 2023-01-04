@@ -18,4 +18,4 @@ jobs:
     - name: Run tests
       run: |
         curl -O https://www.antlr.org/download/antlr-4.11.1-complete.jar
-        ANTLR_JAR=$PWD/antlr-4.11.1-complete.jar (cd javascript/jsx && make check)
+        (ANTLR_JAR=$PWD/antlr-4.11.1-complete.jar cd javascript/jsx && make check)
