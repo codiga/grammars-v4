@@ -8,3 +8,4 @@ compile:
 
 check: compile
 	for file in examples/*.jsx; do ./scripts/check-file.sh $$file ; done
+	for file in examples/*.js; do ./scripts/check-file.sh $$file ; done

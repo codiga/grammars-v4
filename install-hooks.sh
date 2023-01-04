@@ -1,0 +1,1 @@
+ln -s _hooks/pre-push .git/hooks/pre-push
