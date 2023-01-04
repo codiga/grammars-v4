@@ -145,6 +145,7 @@ public abstract class JavaScriptLexerBase extends Lexer
                 return false;
             // This is to make sure there is no parsing error with an HTML tag and that we start to detect
             // regular expression when we do </>
+            // FIXME: fix this parsing issue more elegantly
             case JavaScriptLexer.LessThan:
                 return false;
             default:

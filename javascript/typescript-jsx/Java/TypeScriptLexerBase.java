@@ -140,6 +140,7 @@ public abstract class TypeScriptLexerBase extends Lexer
                 return false;
             // This is to make sure there is no parsing error with an HTML tag and that we start to detect
             // regular expression when we do </>
+            // FIXME: We should fix this issue more elegantly
             case TypeScriptLexer.LessThan:
                 return false;
             default:
