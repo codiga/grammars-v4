@@ -23,3 +23,5 @@ jobs:
       run: export ANTLR_JAR=$GITHUB_WORKSPACE/antlr-4.11.1-complete.jar
     - name: Check grammars
       run: ( ANTLR_JAR=$GITHUB_WORKSPACE/antlr-4.11.1-complete.jar cd javascript/jsx && make check)
+      env:
+        ANTLR_JAR: /home/runner/work/grammars-v4/grammars-v4/antlr-4.11.1-complete.jar
