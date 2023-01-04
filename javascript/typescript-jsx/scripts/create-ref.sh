@@ -13,7 +13,7 @@ if [ ! -d gen ]; then
    make compile
 fi
 
-(cd gen && java -Xmx500M -cp "$ANTLR_JAR:$CLASSPATH" org.antlr.v4.gui.TestRig JavaScript program "../$FILE" -tree > "../$VERIFICATION")
+(cd gen && java -Xmx500M -cp "$ANTLR_JAR:$CLASSPATH" org.antlr.v4.gui.TestRig TypeScript program "../$FILE" -tree > "../$VERIFICATION")
 
 echo "Created reference file $VERIFICATION"
 
