@@ -19,8 +19,8 @@ jobs:
       run: curl -O https://www.antlr.org/download/antlr-4.11.1-complete.jar
     - name: Show pwd
       run: echo $PWD
-    - name: export jar
-      run: export ANTLR_JAR=$GITHUB_WORKSPACE/antlr-4.11.1-complete.jar
+    - name: list files
+      run: ls javascript/jsx/examples/
     - name: Check grammars
       run: ( cd javascript/jsx && make check)
       env:
