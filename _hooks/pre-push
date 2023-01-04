@@ -28,4 +28,12 @@ if [ $? -ne 0 ]; then
     exit 1
 fi
 
+
+
+(cd javascript/typescript-jsx && make check)
+
+if [ $? -ne 0 ]; then
+    exit 1
+fi
+
 exit 0
