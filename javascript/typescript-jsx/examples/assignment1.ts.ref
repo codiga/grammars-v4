@@ -1,0 +1,1 @@
+(program (sourceElements (sourceElement (statement (variableStatement (varModifier const) (variableDeclarationList (variableDeclaration (identifierOrKeyWord bla) = (singleExpression (literal (numericLiteral 1))))) ;)))) <EOF>)

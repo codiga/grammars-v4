@@ -1,0 +1,1 @@
+(program (sourceElements (sourceElement (statement (variableStatement (variableDeclarationList (variableDeclaration (identifierOrKeyWord foo) = (singleExpression (objectLiteral { (propertyAssignment (restParameter ... (singleExpression (identifierName obj)))) , (propertyAssignment (propertyName (identifierName key)) : (singleExpression (literal 'value'))) })))) ;)))) <EOF>)

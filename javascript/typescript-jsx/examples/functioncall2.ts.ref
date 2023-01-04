@@ -1,0 +1,1 @@
+(program (sourceElements (sourceElement (statement (expressionStatement (expressionSequence (singleExpression (singleExpression (identifierName myFunc)) (arguments ( (argumentList (argument (singleExpression (literal (numericLiteral 1)))) , (argument (singleExpression (literal "bar"))) , (argument ... (singleExpression (identifierName myVariable)))) )))))))) <EOF>)
