@@ -392,6 +392,7 @@ htmlTagName
 htmlAttribute
     : htmlAttributeName '=' htmlAttributeValue
     | htmlAttributeName
+    | objectExpressionSequence
     ;
 
 htmlAttributeName
