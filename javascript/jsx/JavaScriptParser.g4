@@ -404,6 +404,7 @@ htmlAttributeName
 identifierOrKeyWord
     : Identifier
     | As
+    | keyword
     ;
 
 htmlChardata
