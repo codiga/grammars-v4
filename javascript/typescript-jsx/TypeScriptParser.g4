@@ -75,7 +75,12 @@ htmlAttribute
 
 htmlAttributeName
     : TagName
-    | identifierOrKeyWord ('-' identifierOrKeyWord)*		// 2020/10/28 bugfix: '-' is recognized as MINUS and TagName is splited by '-'.
+    | identifierOrKeyWordForHtmlAttribute ('-' identifierOrKeyWordForHtmlAttribute)*		// 2020/10/28 bugfix: '-' is recognized as MINUS and TagName is splited by '-'.
+    ;
+
+identifierOrKeyWordForHtmlAttribute
+    : Identifier
+    | As
     | keyword
     ;
 
