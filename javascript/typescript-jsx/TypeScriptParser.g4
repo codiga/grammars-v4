@@ -565,7 +565,7 @@ debuggerStatement
     ;
 
 functionDeclaration
-    : Function_ Identifier callSignature ( ('{' functionBody '}') | SemiColon)
+    : Async? Function_ Identifier callSignature ( ('{' functionBody '}') | SemiColon)
     ;
 
 //Ovveride ECMA
